@@ -9,10 +9,15 @@ class Business(object):
     def add_machine(self, machine):
         self.machines.append(machine)
 
-    def average_delivery_time(self):
-        def machine_avg(m):
+    def expected_delivery_time(self):
+        def single_machine_passthrough_time(m):
             return (m.queue_size + 1) * float(m.process_time)
-        return sum(machine_avg(m) for m in self.machines)
+        slowest_passthrough_time = single_machine_passthrough_time(self.machines[-1])
+        delivery_time = 0
+        for m in self.machines[::-1]:
+            slowest_passthrough_time = max(slowest_passthrough_time, single_machine_passthrough_time(m))
+            delivery_time += slowest_passthrough_time
+        return delivery_time
 
 
 class Machine(object):
@@ -55,7 +60,7 @@ def selftest():
     >>> b = Business()
     >>> m = Machine(process_time=1.0, queue_size=0)
     >>> b.add_machine(m)
-    >>> b.average_delivery_time()
+    >>> b.expected_delivery_time()
     1.0
 
     Now, if we change queue_size to 1, things can
@@ -64,7 +69,7 @@ def selftest():
     flow unit will have to wait in line to be processed:
 
     >>> m.queue_size = 1
-    >>> b.average_delivery_time()
+    >>> b.expected_delivery_time()
     2.0
 
     Now, if we increase process_time to 2, each unit
@@ -72,7 +77,7 @@ def selftest():
     delivery time:
 
     >>> m.process_time = 2
-    >>> b.average_delivery_time()
+    >>> b.expected_delivery_time()
     4.0
 
     If we have a business process of two machines, no queues,
@@ -84,7 +89,7 @@ def selftest():
     >>> m2 = Machine(process_time=10, queue_size=0)
     >>> b2.add_machine(m1)
     >>> b2.add_machine(m2)
-    >>> b2.average_delivery_time()
+    >>> b2.expected_delivery_time()
     20.0
 
     If we add a queue of 10 units to the first machine,
@@ -92,7 +97,7 @@ def selftest():
     means the average goes high up:
 
     >>> m1.queue_size = 10
-    >>> b2.average_delivery_time()
+    >>> b2.expected_delivery_time()
     120.0
 
     (Think about it: a flow unit needs to be processed
@@ -104,14 +109,29 @@ def selftest():
     processing in second machine, another ten, a total
     of 120.
 
-    It does not matter in which order the machines are,
-    so if the long queue is on the second machine instead
-    of the first, we get the same average delivery time:
+    After the value unit leaves the burdened 1st machine,
+    it sips quickly through the 2nd machine.
 
-    >>> m1.queue_size = 0
-    >>> m2.queue_size = 10
-    >>> b2.average_delivery_time()
-    120.0
+    However, if instead it is the second machine that is
+    encumbered, or slow, this means units processed in
+    1st machine have to wait there until there is a spot
+    ready in 2nd machine.
+
+    This is an important observation: any machine down
+    the line that is slow, will slow down the whole
+    chain before it!
+
+    In the simplest case, we have no queues and two
+    machines:
+
+    >>> b3 = Business()
+    >>> m1 = Machine(queue_size=0, process_time=1)
+    >>> m2 = Machine(queue_size=0, process_time=10)
+    >>> b3.add_machine(m1)
+    >>> b3.add_machine(m2)
+    >>> b3.expected_delivery_time()
+    20.0
+
 
     """
 
