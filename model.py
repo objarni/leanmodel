@@ -26,12 +26,16 @@ class Machine(object):
         self.queue_size = queue_size
 
 
+def ask(q):
+    inp = raw_input if raw_input else input
+    print(q)
+    return inp()
 
 def selftest():
     """A Lean model!
 
     We want to model how the 'flow' of in Lean as described
-    by N. Modig and P. Nordström works.
+    by N. Modig and P. Åhlströms works.
 
     They include a lot of concepts:
 
@@ -132,6 +136,7 @@ def selftest():
     >>> b3.expected_delivery_time()
     20.0
 
+
     
     ||||  Observation 1 - bottle necks are worse in end |||
 
@@ -156,6 +161,8 @@ def selftest():
     So in this simple model, the delivery time was tripled
     because of the machine being placed last instead of first!
 
+
+
     ||| Observation 2 - queues are killing process times! |||
 
     Another observation: adding a queue to a station, is the
@@ -179,6 +186,45 @@ def selftest():
 # observation 2: a queue of size N is the same as multiplying
 #                process_time with N+1!!!
 
+doc = """
+Welcome to Lean Business Model!
+This model simulates a very simplistic 'flow model'
+as described in N. Modig and P. Åhlströms book "Detta är Lean!"
+(ISBN: 978-91-87791-13-0).
+
+We simulate a business delivery process by thinking of it as
+a series of "machines" or "stations" that sequentially enhances
+the value of the "product" or "flow unit".
+
+Each machine is modelled as something that has:
+
+  1) a process time per unit
+  2) a queue size.
+
+We do not model variation neither external (in flow units)
+nor internal (downtime in machines).
+
+A business is then, in this simple model, just a series of
+machines.
+
+What we are interested to know is the expected delivery time
+of the modelled business, when the business is working at
+full capacity.
+"""
+
 if __name__ == "__main__":
     import doctest
     doctest.testmod()
+
+    print(doc)
+    n = int(ask("How many machines do you want in your business model?"))
+    machines = []
+    for i in range(n):
+        t = float(ask("What time does machine %d take to process one flow unit?" % i))
+        q = int(ask("How many queue slots does machine %d have?" % i))
+        machines.append(Machine(process_time=t, queue_size=q))
+    business = Business(machines=machines)
+
+    print("The expected delivery time of the business is: %1.1f" %
+        business.expected_delivery_time())
+
