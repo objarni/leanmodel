@@ -29,7 +29,7 @@ class Machine(object):
 def ask(q):
     inp = raw_input if raw_input else input
     print(q)
-    return inp()
+    return inp('>>> ')
 
 def selftest():
     """A Lean model!
