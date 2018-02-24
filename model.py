@@ -3,8 +3,8 @@ import doctest
 
 
 class Business(object):
-    def __init__(self):
-        self.machines = []
+    def __init__(self, machines=None):
+        self.machines = machines if machines else []
 
     def add_machine(self, machine):
         self.machines.append(machine)
@@ -132,9 +132,52 @@ def selftest():
     >>> b3.expected_delivery_time()
     20.0
 
+    
+    ||||  Observation 1 - bottle necks are worse in end |||
+
+    This is an interesting observation: if your bottleneck
+    is placed in the end of the line, it will slow down
+    every station/machine before it!
+
+    Imagine a 5 station business. If we have one station
+    taking 5 times as long as any of the other stations,
+    how much difference does it make to put the station
+    in first instead of last?
+
+    >>> fast_machines = [Machine(queue_size=0, process_time=1) for x in range(4)]
+    >>> slow_machine = Machine(queue_size=0, process_time=5)
+    >>> b4 = Business(machines=fast_machines + [slow_machine])
+    >>> b4.expected_delivery_time()
+    25.0
+    >>> b5 = Business(machines=[slow_machine] + fast_machines)
+    >>> b5.expected_delivery_time()
+    9.0
+
+    So in this simple model, the delivery time was tripled
+    because of the machine being placed last instead of first!
+
+    ||| Observation 2 - queues are killing process times! |||
+
+    Another observation: adding a queue to a station, is the
+    same as slowing down the station by the number of queue slots
+    plus one.
+
+    To prove this, we'll compare the expected delivery time of
+    a slow machine with process time 5, no queue, and a fast machine
+    with process time 1, but a queue of 4 units:
+
+    >>> b6 = Business(machines=[Machine(queue_size=0, process_time=5)])
+    >>> b6.expected_delivery_time()
+    5.0
+    >>> b7 = Business(machines=[Machine(queue_size=4, process_time=1)])
+    >>> b7.expected_delivery_time()
+    5.0
 
     """
-
+# observation 1: bottlenecks are _much_ worse in end of process
+#                than start!
+# observation 2: a queue of size N is the same as multiplying
+#                process_time with N+1!!!
 
 if __name__ == "__main__":
     import doctest
