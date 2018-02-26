@@ -32,7 +32,7 @@ class Machine(object):
 
 def ask(q):
     inp = raw_input if PYTHON2 else input
-    print(q)
+    print('\n' + q)
     return inp('>>> ')
 
 
@@ -230,6 +230,6 @@ if __name__ == "__main__":
         machines.append(Machine(process_time=t, queue_size=q))
     business = Business(machines=machines)
 
-    print("The expected delivery time of the business is: %1.1f" %
+    print("\n*** EXPECTED DELIVERY TIME ***\n%1.1f\n" %
         business.expected_delivery_time())
 
