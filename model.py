@@ -1,5 +1,9 @@
 # coding: utf-8
+import sys
 import doctest
+
+
+PYTHON2 = sys.version[0] == 2
 
 
 class Business(object):
@@ -27,9 +31,10 @@ class Machine(object):
 
 
 def ask(q):
-    inp = raw_input if raw_input else input
+    inp = raw_input if PYTHON2 else input
     print(q)
     return inp('>>> ')
+
 
 def selftest():
     """A Lean model!
