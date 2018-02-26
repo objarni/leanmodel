@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/objarni/leanmodel.svg?branch=master)](https://travis-ci.org/objarni/leanmodel)
+
+
 Lean Business Model
 -------------------
 
