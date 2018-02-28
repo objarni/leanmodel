@@ -35,13 +35,20 @@ full capacity.
 
 How many machines do you want in your business model?
 >>> 2
+
 What time does machine 0 take to process one flow unit?
 >>> 5
+
 How many queue slots does machine 0 have?
 >>> 5
+
 What time does machine 1 take to process one flow unit?
 >>> 5
+
 How many queue slots does machine 1 have?
 >>> 0
-The expected delivery time of the business is: 35.0
+
+*** EXPECTED DELIVERY TIME ***
+35.0
+
 ```
